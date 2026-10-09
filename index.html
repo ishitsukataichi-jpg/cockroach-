@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title id="documentTitle">ゴキブリ写真図鑑・写真集</title>
+<style>
+body{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;margin:0;background:#f4f4f4;color:#222}
+header{background:#222;color:#fff;padding:28px 5vw}
+h1{margin:0 0 8px;font-size:28px} p{line-height:1.7}
+main{padding:25px 4vw}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+figure{margin:0;background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px #0002}
+img{display:block;width:100%;height:210px;object-fit:contain;background:#eee}
+figcaption{padding:11px;font-size:14px;line-height:1.5}
+small{color:#666;word-break:break-all}
+.note{background:#fff;padding:16px;border-radius:12px;margin-bottom:20px}
+a{color:inherit}
+.photo-link{position:relative;display:block}
+.source-tooltip{position:absolute;left:10px;right:10px;bottom:10px;background:rgba(0,0,0,.92);color:#fff;padding:10px 12px;border-radius:9px;font-size:12px;line-height:1.5;opacity:0;transform:translateY(5px);transition:.15s;pointer-events:auto;z-index:3;max-height:160px;overflow:hidden;box-sizing:border-box}
+.source-tooltip .tooltip-copy{display:block;max-height:100px;overflow:hidden;overflow-wrap:anywhere}
+.source-tooltip .show-full-description{display:block;margin-top:7px;padding:5px 8px;font-size:12px;background:#fff;color:#222;border-radius:6px}
+.description-dialog{width:min(680px,calc(100vw - 32px));max-height:80vh;border:0;border-radius:14px;padding:0;box-shadow:0 12px 50px #0005}
+.description-dialog::backdrop{background:#0009}
+.description-dialog .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;background:#222;color:#fff}
+.description-dialog .dialog-body{padding:18px;white-space:pre-wrap;overflow-wrap:anywhere;overflow:auto;max-height:60vh;line-height:1.7}
+.description-dialog .dialog-close{padding:6px 10px;background:#fff;color:#222}
+.photo-link:hover .source-tooltip,.photo-link:focus .source-tooltip{opacity:1;transform:translateY(0)}
+.source-tooltip b{font-size:12px}
+select{padding:10px 12px;border:1px solid #ccc;border-radius:10px;font:inherit;background:white;color:#222}
+.search-box{padding:10px 12px;border:1px solid #ccc;border-radius:10px;min-width:220px;flex:1;font:inherit}
+.page-controls{display:flex;gap:8px;align-items:center;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.page-controls button{min-width:90px}
+.page-info{font-size:14px;color:#555}
+figure.is-hidden{display:none}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:#fff;padding:14px;border-radius:12px;margin-bottom:20px;position:sticky;top:8px;z-index:5;box-shadow:0 2px 10px #0002}
+button{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer;background:#222;color:#fff}
+button:disabled{opacity:.55;cursor:wait}
+#status{font-size:14px;color:#555}
+</style>
+</head>
+<body>
+<header>
+<h1 id="mainTitle">ゴキブリ写真図鑑・写真集</h1>
+<p id="introText">ワモンゴキブリ、クロゴキブリ、チャバネゴキブリ、マダガスカルゴキブリなど、さまざまな種類・成長段階の写真を収録しています。</p>
+<p><b id="totalLabel">現在の総数：</b><b id="liveTotal">137</b> <span id="totalUnit">枚</span></p>
+</header>
+<main>
+<div class="note"><b id="kindLabel">写真の種類</b><br><span id="kindText">ゴキブリの種類・個体・成長段階などの写真</span><br><b id="descriptionLabel">画像の説明</b><br><span id="descriptionText">写真にカーソルを合わせると、元サイトから取得した説明を短く表示します。</span><br><b id="sourcesLabel">写真の出典：</b><a href="https://commons.wikimedia.org/wiki/Category:Blattodea" target="_blank" rel="noopener">Wikimedia Commons</a> · <a href="https://www.inaturalist.org/observations?taxon_name=Blattodea" target="_blank" rel="noopener">iNaturalist</a> · <a href="https://www.gbif.org/species/search?q=Blattodea" target="_blank" rel="noopener">GBIF</a></div>
+<div class="toolbar">
+  <label id="languageLabel" for="languageSelect">言語：</label>
+  <select id="languageSelect" aria-label="表示言語">
+    <option value="ja">日本語</option><option value="en">English</option><option value="zh">简体中文</option><option value="ko">한국어</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option>
+  </select>
+  <input id="searchInput" class="search-box" type="search" placeholder="種類名・ファイル名で検索…" aria-label="写真を検索">
+  <button id="loadBtn" type="button">📷 Wikimediaから追加</button>
+  <button id="loadINatBtn" type="button">📷 iNaturalistから追加</button>
+  <button id="loadGBIFBtn" type="button">📷 GBIFから追加</button>
+  <button id="downloadBtn" type="button">📥 HTMLをダウンロード</button>
+  <span id="status" aria-live="polite">現在 137枚</span>
+</div>
+<div class="page-controls" aria-label="写真一覧ページ操作"><button id="prevPageBtn" type="button">← 前のページ</button><span id="pageInfo" class="page-info">ページ 1</span><button id="nextPageBtn" type="button">次のページ →</button></div>
+<div class="grid">
+
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American_cockroach_%28Blatta_Americana%29.jpg" target="_blank" rel="noopener" data-commons-file="American_cockroach_%28Blatta_Americana%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American%20cockroach%20%28Blatta%20Americana%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American cockroach (Blatta Americana).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>01</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American cockroach (Blatta Americana).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American_cockroach.jpg" target="_blank" rel="noopener" data-commons-file="American_cockroach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American%20cockroach.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American cockroach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>02</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American cockroach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American_cockroachs_%28Periplaneta_americana%29.jpg" target="_blank" rel="noopener" data-commons-file="American_cockroachs_%28Periplaneta_americana%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American%20cockroachs%20%28Periplaneta%20americana%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American cockroachs (Periplaneta americana).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>03</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American cockroachs (Periplaneta americana).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American_roach.JPG" target="_blank" rel="noopener" data-commons-file="American_roach.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American%20roach.JPG?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American roach.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>04</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American roach.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American-cockroach_mirror.png" target="_blank" rel="noopener" data-commons-file="American-cockroach_mirror.png">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American-cockroach%20mirror.png?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American-cockroach mirror.png">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>05</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American-cockroach mirror.png</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:American-cockroach.jpg" target="_blank" rel="noopener" data-commons-file="American-cockroach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/American-cockroach.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - American-cockroach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>06</b>　ワモンゴキブリ（Periplaneta americana）<br><small>American-cockroach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:AmericanCockroach.jpg" target="_blank" rel="noopener" data-commons-file="AmericanCockroach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/AmericanCockroach.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - AmericanCockroach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>07</b>　ワモンゴキブリ（Periplaneta americana）<br><small>AmericanCockroach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_Americana.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_Americana.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20Americana.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Blatta Americana.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>08</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Blatta Americana.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea_-_Periplaneta_americana_-_1.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea_-_Periplaneta_americana_-_1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea%20-%20Periplaneta%20americana%20-%201.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Blattodea - Periplaneta americana - 1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>09</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Blattodea - Periplaneta americana - 1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea_-_Periplaneta_americana_-_2.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea_-_Periplaneta_americana_-_2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea%20-%20Periplaneta%20americana%20-%202.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Blattodea - Periplaneta americana - 2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>10</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Blattodea - Periplaneta americana - 2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea_-_Periplaneta_americana_-_3.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea_-_Periplaneta_americana_-_3.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea%20-%20Periplaneta%20americana%20-%203.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Blattodea - Periplaneta americana - 3.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>11</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Blattodea - Periplaneta americana - 3.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroach_BiblicalZoo.JPG" target="_blank" rel="noopener" data-commons-file="Cockroach_BiblicalZoo.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroach%20BiblicalZoo.JPG?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Cockroach BiblicalZoo.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>12</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Cockroach BiblicalZoo.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroach_July_2013-1.jpg" target="_blank" rel="noopener" data-commons-file="Cockroach_July_2013-1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroach%20July%202013-1.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Cockroach July 2013-1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>13</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Cockroach July 2013-1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroaches_01.JPG" target="_blank" rel="noopener" data-commons-file="Cockroaches_01.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroaches%2001.JPG?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Cockroaches 01.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>14</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Cockroaches 01.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroaches_02.JPG" target="_blank" rel="noopener" data-commons-file="Cockroaches_02.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroaches%2002.JPG?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Cockroaches 02.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>15</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Cockroaches 02.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Periplaneta_americana_%2833821885923%29.jpg" target="_blank" rel="noopener" data-commons-file="Periplaneta_americana_%2833821885923%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Periplaneta%20americana%20%2833821885923%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Periplaneta americana (33821885923).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>16</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Periplaneta americana (33821885923).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Periplaneta_americana_%2841156203870%29.jpg" target="_blank" rel="noopener" data-commons-file="Periplaneta_americana_%2841156203870%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Periplaneta%20americana%20%2841156203870%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Periplaneta americana (41156203870).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>17</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Periplaneta americana (41156203870).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Periplaneta_americana_%2841751987960%29.jpg" target="_blank" rel="noopener" data-commons-file="Periplaneta_americana_%2841751987960%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Periplaneta%20americana%20%2841751987960%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Periplaneta americana (41751987960).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>18</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Periplaneta americana (41751987960).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Periplaneta_americana_%286553770333%29.jpg" target="_blank" rel="noopener" data-commons-file="Periplaneta_americana_%286553770333%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Periplaneta%20americana%20%286553770333%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Periplaneta americana (6553770333).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>19</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Periplaneta americana (6553770333).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Periplaneta_americana_%286553771099%29.jpg" target="_blank" rel="noopener" data-commons-file="Periplaneta_americana_%286553771099%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Periplaneta%20americana%20%286553771099%29.jpg?width=700" loading="lazy" alt="ワモンゴキブリ（Periplaneta americana） - Periplaneta americana (6553771099).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>20</b>　ワモンゴキブリ（Periplaneta americana）<br><small>Periplaneta americana (6553771099).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_%28Linnaeus%2C_1758%29_Oriental_Cockroach_%2824516338277%29.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_%28Linnaeus%2C_1758%29_Oriental_Cockroach_%2824516338277%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20%28Linnaeus%2C%201758%29%20Oriental%20Cockroach%20%2824516338277%29.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis (Linnaeus, 1758) Oriental Cockroach (24516338277).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>21</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis (Linnaeus, 1758) Oriental Cockroach (24516338277).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_-_Wilhelma_01.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_-_Wilhelma_01.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20-%20Wilhelma%2001.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis - Wilhelma 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>22</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis - Wilhelma 01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_0001_L.D.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_0001_L.D.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%200001%20L.D.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis 0001 L.D.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>23</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis 0001 L.D.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_0002_L.D.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_0002_L.D.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%200002%20L.D.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis 0002 L.D.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>24</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis 0002 L.D.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_cdc_2.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_cdc_2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20cdc%202.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis cdc 2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>25</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis cdc 2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_cdc.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_cdc.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20cdc.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis cdc.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>26</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis cdc.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_in_bathtub.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_in_bathtub.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20in%20bathtub.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis in bathtub.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>27</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis in bathtub.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_01.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_01.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20male%20from%20Botevgrad%2C%20Bulgaria%2001.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis male from Botevgrad, Bulgaria 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>28</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis male from Botevgrad, Bulgaria 01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_02.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_02.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20male%20from%20Botevgrad%2C%20Bulgaria%2002.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis male from Botevgrad, Bulgaria 02.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>29</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis male from Botevgrad, Bulgaria 02.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_03.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_03.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20male%20from%20Botevgrad%2C%20Bulgaria%2003.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis male from Botevgrad, Bulgaria 03.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>30</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis male from Botevgrad, Bulgaria 03.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_04.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_04.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20male%20from%20Botevgrad%2C%20Bulgaria%2004.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis male from Botevgrad, Bulgaria 04.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>31</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis male from Botevgrad, Bulgaria 04.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_05.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_male_from_Botevgrad%2C_Bulgaria_05.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20male%20from%20Botevgrad%2C%20Bulgaria%2005.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis male from Botevgrad, Bulgaria 05.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>32</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis male from Botevgrad, Bulgaria 05.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_on_hand.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_on_hand.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20on%20hand.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis on hand.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>33</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis on hand.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_Trento_01.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_Trento_01.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20Trento%2001.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis Trento 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>34</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis Trento 01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_orientalis_Trento_02.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_orientalis_Trento_02.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20orientalis%20Trento%2002.jpg?width=700" loading="lazy" alt="クロゴキブリ（Blatta orientalis） - Blatta orientalis Trento 02.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>35</b>　クロゴキブリ（Blatta orientalis）<br><small>Blatta orientalis Trento 02.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatella_germanica_p1160207.jpg" target="_blank" rel="noopener" data-commons-file="Blatella_germanica_p1160207.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatella%20germanica%20p1160207.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blatella germanica p1160207.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>36</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blatella germanica p1160207.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_%28Linnaeus%2C_1767%29_German_Cockroach_%2824516339107%29.jpg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_%28Linnaeus%2C_1767%29_German_Cockroach_%2824516339107%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%20%28Linnaeus%2C%201767%29%20German%20Cockroach%20%2824516339107%29.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica (Linnaeus, 1767) German Cockroach (24516339107).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>37</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica (Linnaeus, 1767) German Cockroach (24516339107).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_%28YPM_IZ_098668%29.jpeg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_%28YPM_IZ_098668%29.jpeg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%20%28YPM%20IZ%20098668%29.jpeg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica (YPM IZ 098668).jpeg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>38</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica (YPM IZ 098668).jpeg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_%28YPM_IZ_098954%29.jpeg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_%28YPM_IZ_098954%29.jpeg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%20%28YPM%20IZ%20098954%29.jpeg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica (YPM IZ 098954).jpeg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>39</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica (YPM IZ 098954).jpeg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_%28YPM_IZ_098955%29.jpeg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_%28YPM_IZ_098955%29.jpeg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%20%28YPM%20IZ%20098955%29.jpeg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica (YPM IZ 098955).jpeg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>40</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica (YPM IZ 098955).jpeg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_1236168.jpg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_1236168.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%201236168.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica 1236168.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>41</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica 1236168.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattella_germanica_2025_03_29.jpg" target="_blank" rel="noopener" data-commons-file="Blattella_germanica_2025_03_29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattella%20germanica%202025%2003%2029.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattella germanica 2025 03 29.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>42</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattella germanica 2025 03 29.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea._Cascuda._Santiago_de_Compostela_1.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea._Cascuda._Santiago_de_Compostela_1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea.%20Cascuda.%20Santiago%20de%20Compostela%201.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattodea. Cascuda. Santiago de Compostela 1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>43</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattodea. Cascuda. Santiago de Compostela 1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea._Cascuda._Santiago_de_Compostela_2.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea._Cascuda._Santiago_de_Compostela_2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea.%20Cascuda.%20Santiago%20de%20Compostela%202.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattodea. Cascuda. Santiago de Compostela 2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>44</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattodea. Cascuda. Santiago de Compostela 2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea._Cascuda._Santiago_de_Compostela_3.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea._Cascuda._Santiago_de_Compostela_3.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea.%20Cascuda.%20Santiago%20de%20Compostela%203.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattodea. Cascuda. Santiago de Compostela 3.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>45</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattodea. Cascuda. Santiago de Compostela 3.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea._Cascuda._Santiago_de_Compostela_4.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea._Cascuda._Santiago_de_Compostela_4.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea.%20Cascuda.%20Santiago%20de%20Compostela%204.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattodea. Cascuda. Santiago de Compostela 4.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>46</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattodea. Cascuda. Santiago de Compostela 4.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blattodea._Cascuda._Santiago_de_Compostela_5.jpg" target="_blank" rel="noopener" data-commons-file="Blattodea._Cascuda._Santiago_de_Compostela_5.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blattodea.%20Cascuda.%20Santiago%20de%20Compostela%205.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Blattodea. Cascuda. Santiago de Compostela 5.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>47</b>　チャバネゴキブリ（Blattella germanica）<br><small>Blattodea. Cascuda. Santiago de Compostela 5.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroach%2C_post-ecdysis.jpg" target="_blank" rel="noopener" data-commons-file="Cockroach%2C_post-ecdysis.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroach%2C%20post-ecdysis.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Cockroach, post-ecdysis.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>48</b>　チャバネゴキブリ（Blattella germanica）<br><small>Cockroach, post-ecdysis.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroach.jpg" target="_blank" rel="noopener" data-commons-file="Cockroach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroach.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - Cockroach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>49</b>　チャバネゴキブリ（Blattella germanica）<br><small>Cockroach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:German_cockroach_%28Blattella_germanica%29_probably_%2843118262090%29.jpg" target="_blank" rel="noopener" data-commons-file="German_cockroach_%28Blattella_germanica%29_probably_%2843118262090%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/German%20cockroach%20%28Blattella%20germanica%29%20probably%20%2843118262090%29.jpg?width=700" loading="lazy" alt="チャバネゴキブリ（Blattella germanica） - German cockroach (Blattella germanica) probably (43118262090).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>50</b>　チャバネゴキブリ（Blattella germanica）<br><small>German cockroach (Blattella germanica) probably (43118262090).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cici_the_Madagascan_Hissing_Cockroach%2C_Capen_Hill_2026-06-01.jpg" target="_blank" rel="noopener" data-commons-file="Cici_the_Madagascan_Hissing_Cockroach%2C_Capen_Hill_2026-06-01.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cici%20the%20Madagascan%20Hissing%20Cockroach%2C%20Capen%20Hill%202026-06-01.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Cici the Madagascan Hissing Cockroach, Capen Hill 2026-06-01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>51</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Cici the Madagascan Hissing Cockroach, Capen Hill 2026-06-01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Cockroach_female_Gromphadorhina_portentosa_with_ootheca.png" target="_blank" rel="noopener" data-commons-file="Cockroach_female_Gromphadorhina_portentosa_with_ootheca.png">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Cockroach%20female%20Gromphadorhina%20portentosa%20with%20ootheca.png?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Cockroach female Gromphadorhina portentosa with ootheca.png">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>52</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Cockroach female Gromphadorhina portentosa with ootheca.png</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Female_Gromphadorhina_portentosa_from_beneath.jpg" target="_blank" rel="noopener" data-commons-file="Female_Gromphadorhina_portentosa_from_beneath.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Female%20Gromphadorhina%20portentosa%20from%20beneath.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Female Gromphadorhina portentosa from beneath.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>53</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Female Gromphadorhina portentosa from beneath.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Female_Madagascar_hissing_cockroach.JPG" target="_blank" rel="noopener" data-commons-file="Female_Madagascar_hissing_cockroach.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Female%20Madagascar%20hissing%20cockroach.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Female Madagascar hissing cockroach.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>54</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Female Madagascar hissing cockroach.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Female_Madagascar_hissing_cockroach2.jpg" target="_blank" rel="noopener" data-commons-file="Female_Madagascar_hissing_cockroach2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Female%20Madagascar%20hissing%20cockroach2.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Female Madagascar hissing cockroach2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>55</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Female Madagascar hissing cockroach2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:FemaleMadagascarHissingRoach.jpeg" target="_blank" rel="noopener" data-commons-file="FemaleMadagascarHissingRoach.jpeg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/FemaleMadagascarHissingRoach.jpeg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - FemaleMadagascarHissingRoach.jpeg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>56</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>FemaleMadagascarHissingRoach.jpeg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gorromphina_portentosa_upper_view.JPG" target="_blank" rel="noopener" data-commons-file="Gorromphina_portentosa_upper_view.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gorromphina%20portentosa%20upper%20view.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gorromphina portentosa upper view.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>57</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gorromphina portentosa upper view.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_.portentosa.JPG" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_.portentosa.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20.portentosa.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina .portentosa.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>58</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina .portentosa.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_%28outside%29.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_%28outside%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20%28outside%29.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa (outside).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>59</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa (outside).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_1475038.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_1475038.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%201475038.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa 1475038.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>60</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa 1475038.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_2.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%202.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa 2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>61</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa 2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_Akvariet_i_Bergen13.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_Akvariet_i_Bergen13.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20Akvariet%20i%20Bergen13.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa Akvariet i Bergen13.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>62</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa Akvariet i Bergen13.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_birth.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_birth.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20birth.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa birth.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>63</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa birth.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_birth1.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_birth1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20birth1.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa birth1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>64</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa birth1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_on_hand.JPG" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_on_hand.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20on%20hand.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa on hand.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>65</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa on hand.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Gromphadorhina_portentosa_size_comparison_between_an_adult_%28female%29_and_a_newborn.jpg" target="_blank" rel="noopener" data-commons-file="Gromphadorhina_portentosa_size_comparison_between_an_adult_%28female%29_and_a_newborn.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Gromphadorhina%20portentosa%20size%20comparison%20between%20an%20adult%20%28female%29%20and%20a%20newborn.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Gromphadorhina portentosa size comparison between an adult (female) and a newborn.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>66</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Gromphadorhina portentosa size comparison between an adult (female) and a newborn.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Madagascar_hissing_cockroaches_bugs_gromphadorhina_portentosa.jpg" target="_blank" rel="noopener" data-commons-file="Madagascar_hissing_cockroaches_bugs_gromphadorhina_portentosa.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Madagascar%20hissing%20cockroaches%20bugs%20gromphadorhina%20portentosa.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Madagascar hissing cockroaches bugs gromphadorhina portentosa.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>67</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Madagascar hissing cockroaches bugs gromphadorhina portentosa.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Madagascar_hissing_cockroaches_CAS_1.JPG" target="_blank" rel="noopener" data-commons-file="Madagascar_hissing_cockroaches_CAS_1.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Madagascar%20hissing%20cockroaches%20CAS%201.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Madagascar hissing cockroaches CAS 1.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>68</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Madagascar hissing cockroaches CAS 1.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Madagascar_hissing_cockroaches_CAS_2.JPG" target="_blank" rel="noopener" data-commons-file="Madagascar_hissing_cockroaches_CAS_2.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Madagascar%20hissing%20cockroaches%20CAS%202.JPG?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Madagascar hissing cockroaches CAS 2.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>69</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Madagascar hissing cockroaches CAS 2.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Madagascar_Hissing_Cockroaches.jpg" target="_blank" rel="noopener" data-commons-file="Madagascar_Hissing_Cockroaches.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Madagascar%20Hissing%20Cockroaches.jpg?width=700" loading="lazy" alt="マダガスカルゴキブリ（Gromphadorhina portentosa） - Madagascar Hissing Cockroaches.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>70</b>　マダガスカルゴキブリ（Gromphadorhina portentosa）<br><small>Madagascar Hissing Cockroaches.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Adult_male_Turkistan_Roach_variation.jpg" target="_blank" rel="noopener" data-commons-file="Adult_male_Turkistan_Roach_variation.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Adult%20male%20Turkistan%20Roach%20variation.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Adult male Turkistan Roach variation.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>71</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Adult male Turkistan Roach variation.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_lateralis_%28cropped%29.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_lateralis_%28cropped%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20lateralis%20%28cropped%29.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Blatta lateralis (cropped).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>72</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Blatta lateralis (cropped).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_lateralis_adults.JPG" target="_blank" rel="noopener" data-commons-file="Blatta_lateralis_adults.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20lateralis%20adults.JPG?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Blatta lateralis adults.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>73</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Blatta lateralis adults.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blatta_lateralis.jpg" target="_blank" rel="noopener" data-commons-file="Blatta_lateralis.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blatta%20lateralis.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Blatta lateralis.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>74</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Blatta lateralis.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Female_nymph_variations_of_Turkistan_Roach.jpg" target="_blank" rel="noopener" data-commons-file="Female_nymph_variations_of_Turkistan_Roach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Female%20nymph%20variations%20of%20Turkistan%20Roach.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Female nymph variations of Turkistan Roach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>75</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Female nymph variations of Turkistan Roach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Light_colored_Turkistan_Roach.jpg" target="_blank" rel="noopener" data-commons-file="Light_colored_Turkistan_Roach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Light%20colored%20Turkistan%20Roach.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Light colored Turkistan Roach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>76</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Light colored Turkistan Roach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Orange_Turkistan_Roach_nymph.jpg" target="_blank" rel="noopener" data-commons-file="Orange_Turkistan_Roach_nymph.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Orange%20Turkistan%20Roach%20nymph.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Orange Turkistan Roach nymph.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>77</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Orange Turkistan Roach nymph.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Recently_molted_Turkistan_Roach.jpg" target="_blank" rel="noopener" data-commons-file="Recently_molted_Turkistan_Roach.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Recently%20molted%20Turkistan%20Roach.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Recently molted Turkistan Roach.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>78</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Recently molted Turkistan Roach.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Shelfordella_lateralis_newborn.png" target="_blank" rel="noopener" data-commons-file="Shelfordella_lateralis_newborn.png">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Shelfordella%20lateralis%20newborn.png?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Shelfordella lateralis newborn.png">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>79</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Shelfordella lateralis newborn.png</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Shelfordella_lateralis_nymphs_in_mud.jpg" target="_blank" rel="noopener" data-commons-file="Shelfordella_lateralis_nymphs_in_mud.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Shelfordella%20lateralis%20nymphs%20in%20mud.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Shelfordella lateralis nymphs in mud.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>80</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Shelfordella lateralis nymphs in mud.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Turkestan_Cockroach%2C_Leo_Nature_Trail%2C_Malibu%2C_CA%2C_US_imported_from_iNaturalist_photo_548136297.jpg" target="_blank" rel="noopener" data-commons-file="Turkestan_Cockroach%2C_Leo_Nature_Trail%2C_Malibu%2C_CA%2C_US_imported_from_iNaturalist_photo_548136297.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Turkestan%20Cockroach%2C%20Leo%20Nature%20Trail%2C%20Malibu%2C%20CA%2C%20US%20imported%20from%20iNaturalist%20photo%20548136297.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Turkestan Cockroach, Leo Nature Trail, Malibu, CA, US imported from iNaturalist photo 548136297.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>81</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Turkestan Cockroach, Leo Nature Trail, Malibu, CA, US imported from iNaturalist photo 548136297.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Turkestan_Cockroach%2C_Live_Oak_Canyon%2C_Redlands%2C_CA%2C_USA_imported_from_iNaturalist_photo_321873471.jpg" target="_blank" rel="noopener" data-commons-file="Turkestan_Cockroach%2C_Live_Oak_Canyon%2C_Redlands%2C_CA%2C_USA_imported_from_iNaturalist_photo_321873471.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Turkestan%20Cockroach%2C%20Live%20Oak%20Canyon%2C%20Redlands%2C%20CA%2C%20USA%20imported%20from%20iNaturalist%20photo%20321873471.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Turkestan Cockroach, Live Oak Canyon, Redlands, CA, USA imported from iNaturalist photo 321873471.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>82</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Turkestan Cockroach, Live Oak Canyon, Redlands, CA, USA imported from iNaturalist photo 321873471.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Turkestan_Cockroach%2C_Maricopa_County%2C_US-AZ%2C_US_imported_from_iNaturalist_photo_497767448.jpg" target="_blank" rel="noopener" data-commons-file="Turkestan_Cockroach%2C_Maricopa_County%2C_US-AZ%2C_US_imported_from_iNaturalist_photo_497767448.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Turkestan%20Cockroach%2C%20Maricopa%20County%2C%20US-AZ%2C%20US%20imported%20from%20iNaturalist%20photo%20497767448.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Turkestan Cockroach, Maricopa County, US-AZ, US imported from iNaturalist photo 497767448.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>83</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Turkestan Cockroach, Maricopa County, US-AZ, US imported from iNaturalist photo 497767448.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Turkistan_Roach_nymph_in_leaves.jpg" target="_blank" rel="noopener" data-commons-file="Turkistan_Roach_nymph_in_leaves.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Turkistan%20Roach%20nymph%20in%20leaves.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - Turkistan Roach nymph in leaves.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>84</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>Turkistan Roach nymph in leaves.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:ZOO_Warszawa_blatta_lateralis.jpg" target="_blank" rel="noopener" data-commons-file="ZOO_Warszawa_blatta_lateralis.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/ZOO%20Warszawa%20blatta%20lateralis.jpg?width=700" loading="lazy" alt="トルキスタンゴキブリ（Blatta/Shelfordella lateralis） - ZOO Warszawa blatta lateralis.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>85</b>　トルキスタンゴキブリ（Blatta/Shelfordella lateralis）<br><small>ZOO Warszawa blatta lateralis.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20%28Serville%2C%201839%29.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20%28Serville%2C%201839%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20%28Serville%2C%201839%29.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia (Serville, 1839).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>86</b>　Blaptica dubia<br><small>Blaptica dubia (Serville, 1839).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20-%20female.JPG" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20-%20female.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20-%20female.JPG?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia - female.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>87</b>　Blaptica dubia<br><small>Blaptica dubia - female.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20-%20semiadult%20-%20vertical%20wall.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20-%20semiadult%20-%20vertical%20wall.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20-%20semiadult%20-%20vertical%20wall.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia - semiadult - vertical wall.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>88</b>　Blaptica dubia<br><small>Blaptica dubia - semiadult - vertical wall.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20-%20semiadult.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20-%20semiadult.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20-%20semiadult.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia - semiadult.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>89</b>　Blaptica dubia<br><small>Blaptica dubia - semiadult.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20-%20various.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20-%20various.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20-%20various.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia - various.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>90</b>　Blaptica dubia<br><small>Blaptica dubia - various.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20mating%20-%20male%20left%2C%20female%20right.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20mating%20-%20male%20left%2C%20female%20right.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20mating%20-%20male%20left%2C%20female%20right.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia mating - male left, female right.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>91</b>　Blaptica dubia<br><small>Blaptica dubia mating - male left, female right.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20po%C5%BE%C3%ADr%C3%A1%20svlek.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20po%C5%BE%C3%ADr%C3%A1%20svlek.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20po%C5%BE%C3%ADr%C3%A1%20svlek.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia požírá svlek.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>92</b>　Blaptica dubia<br><small>Blaptica dubia požírá svlek.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia%20synchronous%20undress.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia%20synchronous%20undress.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia%20synchronous%20undress.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia synchronous undress.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>93</b>　Blaptica dubia<br><small>Blaptica dubia synchronous undress.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia1.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia1.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>94</b>　Blaptica dubia<br><small>Blaptica dubia1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica-Dubia-cockroaches-x3-male-female-juvenile-v2.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica-Dubia-cockroaches-x3-male-female-juvenile-v2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica-Dubia-cockroaches-x3-male-female-juvenile-v2.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica-Dubia-cockroaches-x3-male-female-juvenile-v2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>95</b>　Blaptica dubia<br><small>Blaptica-Dubia-cockroaches-x3-male-female-juvenile-v2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Dubia%20Roach%20Exoskeleton%20at%202%C3%97%20Magnification.jpg" target="_blank" rel="noopener" data-commons-file="Dubia%20Roach%20Exoskeleton%20at%202%C3%97%20Magnification.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Dubia%20Roach%20Exoskeleton%20at%202%C3%97%20Magnification.jpg?width=700" loading="lazy" alt="Blaptica dubia - Dubia Roach Exoskeleton at 2× Magnification.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>96</b>　Blaptica dubia<br><small>Dubia Roach Exoskeleton at 2× Magnification.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Dubia-cockroach-female-near-ruler.jpg" target="_blank" rel="noopener" data-commons-file="Dubia-cockroach-female-near-ruler.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Dubia-cockroach-female-near-ruler.jpg?width=700" loading="lazy" alt="Blaptica dubia - Dubia-cockroach-female-near-ruler.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>97</b>　Blaptica dubia<br><small>Dubia-cockroach-female-near-ruler.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaptica%20dubia.jpg" target="_blank" rel="noopener" data-commons-file="Blaptica%20dubia.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaptica%20dubia.jpg?width=700" loading="lazy" alt="Blaptica dubia - Blaptica dubia.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>98</b>　Blaptica dubia<br><small>Blaptica dubia.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20discoidalis%200006%20L.D.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20discoidalis%200006%20L.D.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20discoidalis%200006%20L.D.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Blaberus discoidalis 0006 L.D.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>99</b>　Blaberus discoidalis<br><small>Blaberus discoidalis 0006 L.D.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20discoidalis%200008%20L.D.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20discoidalis%200008%20L.D.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20discoidalis%200008%20L.D.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Blaberus discoidalis 0008 L.D.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>100</b>　Blaberus discoidalis<br><small>Blaberus discoidalis 0008 L.D.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20discoidalis%20female%20and%20ootheca.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20discoidalis%20female%20and%20ootheca.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20discoidalis%20female%20and%20ootheca.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Blaberus discoidalis female and ootheca.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>101</b>　Blaberus discoidalis<br><small>Blaberus discoidalis female and ootheca.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20discoidalis%20mating.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20discoidalis%20mating.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20discoidalis%20mating.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Blaberus discoidalis mating.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>102</b>　Blaberus discoidalis<br><small>Blaberus discoidalis mating.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20discoidalis%20ootheca.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20discoidalis%20ootheca.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20discoidalis%20ootheca.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Blaberus discoidalis ootheca.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>103</b>　Blaberus discoidalis<br><small>Blaberus discoidalis ootheca.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200035.JPG" target="_blank" rel="noopener" data-commons-file="Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200035.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200035.JPG?width=700" loading="lazy" alt="Blaberus discoidalis - Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0035.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>104</b>　Blaberus discoidalis<br><small>Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0035.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200036.JPG" target="_blank" rel="noopener" data-commons-file="Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200036.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200036.JPG?width=700" loading="lazy" alt="Blaberus discoidalis - Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0036.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>105</b>　Blaberus discoidalis<br><small>Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0036.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200167.JPG" target="_blank" rel="noopener" data-commons-file="Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200167.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200167.JPG?width=700" loading="lazy" alt="Blaberus discoidalis - Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0167.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>106</b>　Blaberus discoidalis<br><small>Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0167.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200169.JPG" target="_blank" rel="noopener" data-commons-file="Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200169.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200169.JPG?width=700" loading="lazy" alt="Blaberus discoidalis - Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0169.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>107</b>　Blaberus discoidalis<br><small>Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0169.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200170.JPG" target="_blank" rel="noopener" data-commons-file="Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200170.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Naturkundliche%20Sammlung%20%C3%9Cbermaxx%20%C3%9Cberseemuseum%20Bremen%200170.JPG?width=700" loading="lazy" alt="Blaberus discoidalis - Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0170.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>108</b>　Blaberus discoidalis<br><small>Naturkundliche Sammlung Übermaxx Überseemuseum Bremen 0170.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Washington%20DC%20Zoo%20-%20Blaberus%20discoidalis%201.jpg" target="_blank" rel="noopener" data-commons-file="Washington%20DC%20Zoo%20-%20Blaberus%20discoidalis%201.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Washington%20DC%20Zoo%20-%20Blaberus%20discoidalis%201.jpg?width=700" loading="lazy" alt="Blaberus discoidalis - Washington DC Zoo - Blaberus discoidalis 1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>109</b>　Blaberus discoidalis<br><small>Washington DC Zoo - Blaberus discoidalis 1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:20110502%20Blaberus%20giganteus.jpg" target="_blank" rel="noopener" data-commons-file="20110502%20Blaberus%20giganteus.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/20110502%20Blaberus%20giganteus.jpg?width=700" loading="lazy" alt="Blaberus giganteus - 20110502 Blaberus giganteus.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>110</b>　Blaberus giganteus<br><small>20110502 Blaberus giganteus.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberidae%20-%20Blaberus%20giganteus.JPG" target="_blank" rel="noopener" data-commons-file="Blaberidae%20-%20Blaberus%20giganteus.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberidae%20-%20Blaberus%20giganteus.JPG?width=700" loading="lazy" alt="Blaberus giganteus - Blaberidae - Blaberus giganteus.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>111</b>　Blaberus giganteus<br><small>Blaberidae - Blaberus giganteus.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20%2814517914994%29.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20%2814517914994%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20%2814517914994%29.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus (14517914994).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>112</b>　Blaberus giganteus<br><small>Blaberus giganteus (14517914994).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20%28Buffalo%20Zoo%29.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20%28Buffalo%20Zoo%29.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20%28Buffalo%20Zoo%29.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus (Buffalo Zoo).jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>113</b>　Blaberus giganteus<br><small>Blaberus giganteus (Buffalo Zoo).jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20%28Wroclaw%20zoo%29-1.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20%28Wroclaw%20zoo%29-1.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20%28Wroclaw%20zoo%29-1.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus (Wroclaw zoo)-1.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>114</b>　Blaberus giganteus<br><small>Blaberus giganteus (Wroclaw zoo)-1.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20%28Wroclaw%20zoo%29-2.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20%28Wroclaw%20zoo%29-2.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20%28Wroclaw%20zoo%29-2.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus (Wroclaw zoo)-2.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>115</b>　Blaberus giganteus<br><small>Blaberus giganteus (Wroclaw zoo)-2.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20%28Wroclaw%20zoo%29-3.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20%28Wroclaw%20zoo%29-3.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20%28Wroclaw%20zoo%29-3.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus (Wroclaw zoo)-3.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>116</b>　Blaberus giganteus<br><small>Blaberus giganteus (Wroclaw zoo)-3.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%200001%20L.D.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%200001%20L.D.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%200001%20L.D.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus 0001 L.D.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>117</b>　Blaberus giganteus<br><small>Blaberus giganteus 0001 L.D.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%200zz.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%200zz.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%200zz.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus 0zz.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>118</b>　Blaberus giganteus<br><small>Blaberus giganteus 0zz.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20MHNT%20dos.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20MHNT%20dos.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20MHNT%20dos.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus MHNT dos.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>119</b>　Blaberus giganteus<br><small>Blaberus giganteus MHNT dos.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20MHNT%20ventre.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20MHNT%20ventre.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20MHNT%20ventre.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus MHNT ventre.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>120</b>　Blaberus giganteus<br><small>Blaberus giganteus MHNT ventre.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Blaberus%20giganteus%20MHNT.jpg" target="_blank" rel="noopener" data-commons-file="Blaberus%20giganteus%20MHNT.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Blaberus%20giganteus%20MHNT.jpg?width=700" loading="lazy" alt="Blaberus giganteus - Blaberus giganteus MHNT.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>121</b>　Blaberus giganteus<br><small>Blaberus giganteus MHNT.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Bernstein-Waldschabe%20Ectobius%20vittiventris%200924.jpg" target="_blank" rel="noopener" data-commons-file="Bernstein-Waldschabe%20Ectobius%20vittiventris%200924.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bernstein-Waldschabe%20Ectobius%20vittiventris%200924.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Bernstein-Waldschabe Ectobius vittiventris 0924.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>122</b>　Ectobius vittiventris<br><small>Bernstein-Waldschabe Ectobius vittiventris 0924.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Bernstein-Waldschabe%20Ectobius%20vittiventris%200928.jpg" target="_blank" rel="noopener" data-commons-file="Bernstein-Waldschabe%20Ectobius%20vittiventris%200928.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bernstein-Waldschabe%20Ectobius%20vittiventris%200928.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Bernstein-Waldschabe Ectobius vittiventris 0928.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>123</b>　Ectobius vittiventris<br><small>Bernstein-Waldschabe Ectobius vittiventris 0928.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Bernstein-Waldschabe%20Ectobius%20vittiventris%200949.jpg" target="_blank" rel="noopener" data-commons-file="Bernstein-Waldschabe%20Ectobius%20vittiventris%200949.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bernstein-Waldschabe%20Ectobius%20vittiventris%200949.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Bernstein-Waldschabe Ectobius vittiventris 0949.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>124</b>　Ectobius vittiventris<br><small>Bernstein-Waldschabe Ectobius vittiventris 0949.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Bernstein-Waldschabe%20Ectobius%20vittiventris%200974.jpg" target="_blank" rel="noopener" data-commons-file="Bernstein-Waldschabe%20Ectobius%20vittiventris%200974.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bernstein-Waldschabe%20Ectobius%20vittiventris%200974.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Bernstein-Waldschabe Ectobius vittiventris 0974.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>125</b>　Ectobius vittiventris<br><small>Bernstein-Waldschabe Ectobius vittiventris 0974.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Bernstein-Waldschabe%20Ectobius%20vittiventris%200982.jpg" target="_blank" rel="noopener" data-commons-file="Bernstein-Waldschabe%20Ectobius%20vittiventris%200982.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Bernstein-Waldschabe%20Ectobius%20vittiventris%200982.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Bernstein-Waldschabe Ectobius vittiventris 0982.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>126</b>　Ectobius vittiventris<br><small>Bernstein-Waldschabe Ectobius vittiventris 0982.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20cf.%20vittiventris-wiki.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20cf.%20vittiventris-wiki.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20cf.%20vittiventris-wiki.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Ectobius cf. vittiventris-wiki.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>127</b>　Ectobius vittiventris<br><small>Ectobius cf. vittiventris-wiki.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20vittiventris%20prep.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20vittiventris%20prep.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20vittiventris%20prep.jpg?width=700" loading="lazy" alt="Ectobius vittiventris - Ectobius vittiventris prep.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>128</b>　Ectobius vittiventris<br><small>Ectobius vittiventris prep.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobiidae%20-%20Ectobius%20sp.-1.JPG" target="_blank" rel="noopener" data-commons-file="Ectobiidae%20-%20Ectobius%20sp.-1.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobiidae%20-%20Ectobius%20sp.-1.JPG?width=700" loading="lazy" alt="Ectobius - Ectobiidae - Ectobius sp.-1.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>129</b>　Ectobius<br><small>Ectobiidae - Ectobius sp.-1.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobiidae%20-%20Ectobius%20sp.-2.JPG" target="_blank" rel="noopener" data-commons-file="Ectobiidae%20-%20Ectobius%20sp.-2.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobiidae%20-%20Ectobius%20sp.-2.JPG?width=700" loading="lazy" alt="Ectobius - Ectobiidae - Ectobius sp.-2.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>130</b>　Ectobius<br><small>Ectobiidae - Ectobius sp.-2.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20lucidus%20hunting.JPG" target="_blank" rel="noopener" data-commons-file="Ectobius%20lucidus%20hunting.JPG">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20lucidus%20hunting.JPG?width=700" loading="lazy" alt="Ectobius - Ectobius lucidus hunting.JPG">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>131</b>　Ectobius<br><small>Ectobius lucidus hunting.JPG</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp%20Paludi%2001.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp%20Paludi%2001.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp%20Paludi%2001.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp Paludi 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>132</b>　Ectobius<br><small>Ectobius sp Paludi 01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp%20Paludi%2002.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp%20Paludi%2002.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp%20Paludi%2002.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp Paludi 02.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>133</b>　Ectobius<br><small>Ectobius sp Paludi 02.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp%20Toblino%2001.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp%20Toblino%2001.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp%20Toblino%2001.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp Toblino 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>134</b>　Ectobius<br><small>Ectobius sp Toblino 01.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp%20Toblino%2002.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp%20Toblino%2002.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp%20Toblino%2002.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp Toblino 02.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>135</b>　Ectobius<br><small>Ectobius sp Toblino 02.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp%20Toblino%2003.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp%20Toblino%2003.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp%20Toblino%2003.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp Toblino 03.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>136</b>　Ectobius<br><small>Ectobius sp Toblino 03.jpg</small></figcaption>
+        </figure>
+        <figure>
+          <a class="photo-link" href="https://commons.wikimedia.org/wiki/File:Ectobius%20sp.%2001.jpg" target="_blank" rel="noopener" data-commons-file="Ectobius%20sp.%2001.jpg">
+            <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ectobius%20sp.%2001.jpg?width=700" loading="lazy" alt="Ectobius - Ectobius sp. 01.jpg">
+            <span class="source-tooltip"><b>元サイトの説明</b><br>読み込み中…</span>
+          </a>
+          <figcaption><b>137</b>　Ectobius<br><small>Ectobius sp. 01.jpg</small></figcaption>
+        </figure>
+</div>
+<div class="page-controls" aria-label="写真一覧ページ操作"><button id="prevPageBtnBottom" type="button">← 前のページ</button><span id="pageInfoBottom" class="page-info">ページ 1</span><button id="nextPageBtnBottom" type="button">次のページ →</button></div>
+</main>
+<dialog id="descriptionDialog" class="description-dialog"><div class="dialog-head"><b id="descriptionDialogTitle">説明文全文</b><button type="button" class="dialog-close" id="descriptionDialogClose">閉じる ✕</button></div><div class="dialog-body" id="descriptionDialogBody"></div></dialog>
+<script>
+(() => {
+  const grid = document.querySelector('.grid');
+  const loadBtn = document.getElementById('loadBtn');
+  const loadINatBtn = document.getElementById('loadINatBtn');
+  const loadGBIFBtn = document.getElementById('loadGBIFBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const status = document.getElementById('status');
+  const liveTotal = document.getElementById('liveTotal');
+  const languageSelect = document.getElementById('languageSelect');
+  const searchInput = document.getElementById('searchInput');
+  const seen = new Set([...grid.querySelectorAll('a[href]')].map(a => a.href));
+  let count = grid.querySelectorAll('figure').length;
+  let loading = false;
+  const TARGET = 3000;
+  const PAGE_SIZE = 60;
+  let currentPage = 1;
+  let filteredFigures = [];
+  let statusKey = 'ready';
+  let statusArgs = [];
+  const captionOriginals = new WeakMap();
+  const captionLanguages = new WeakMap();
+  const captionPending = new WeakSet();
+  const captionTranslationCache = new Map();
+  const dict = {
+    ja:{title:'ゴキブリ写真図鑑・写真集',intro:'ワモンゴキブリ、クロゴキブリ、チャバネゴキブリ、マダガスカルゴキブリなど、さまざまな種類・成長段階の写真を収録しています。',total:'現在の総数：',unit:'枚',kind:'写真の種類',kindText:'ゴキブリの種類・個体・成長段階などの写真',desc:'画像の説明',descText:'写真にカーソルを合わせると、元サイトから取得した説明を短く表示します。',sources:'写真の出典：',language:'言語：',search:'種類名・ファイル名で検索…',searchLabel:'写真を検索',commons:'📷 Wikimediaから追加',inat:'📷 iNaturalistから追加',gbif:'📷 GBIFから追加',download:'📥 HTMLをダウンロード',ready:'現在 {n} 枚',loading:'{source}から写真を取得中…（{n}枚）',done:'現在 {n} 枚。{source}からの追加読み込みが完了しました。',error:'現在 {n} 枚。取得中にエラーが発生しました。もう一度試してください。',prev:'← 前のページ',next:'次のページ →',page:'ページ {p}/{pages}・表示 {a}–{b} / {n}枚',category:'カテゴリ：',tip:'元サイトの説明',getting:'説明を取得中…',noDesc:'個別の説明文はありません。',retry:'説明を取得できませんでした。元ファイルページを開いて確認してください。'},
+    en:{title:'Cockroach Photo Gallery',intro:'A photo collection of cockroach species and life stages, including American, Oriental, German and Madagascar cockroaches.',total:'Total photos: ',unit:'',kind:'Photo collection',kindText:'Photos of cockroach species, individuals and life stages.',desc:'Image descriptions',descText:'Hover over a photo to see a short description from its source.',sources:'Image sources: ',language:'Language:',search:'Search species or filename…',searchLabel:'Search photos',commons:'📷 Add from Wikimedia',inat:'📷 Add from iNaturalist',gbif:'📷 Add from GBIF',download:'📥 Download HTML',ready:'Total: {n} photos',loading:'Loading photos from {source}… ({n})',done:'Total: {n} photos. Finished loading from {source}.',error:'Total: {n} photos. Loading failed; please try again.',prev:'← Previous',next:'Next →',page:'Page {p}/{pages} · Showing {a}–{b} of {n}',category:'Category: ',tip:'Source description',getting:'Loading description…',noDesc:'No individual description is available.',retry:'Could not retrieve the description. Open the source page to check.'},
+    zh:{title:'蟑螂照片图鉴',intro:'收录美洲大蠊、东方蜚蠊、德国小蠊及马达加斯加蟑螂等不同种类和生长阶段的照片。',total:'照片总数：',unit:'张',kind:'照片内容',kindText:'不同蟑螂种类、个体和生长阶段的照片。',desc:'图片说明',descText:'将鼠标悬停在照片上，可查看来源网站提供的简短说明。',sources:'图片来源：',language:'语言：',search:'搜索种类或文件名…',searchLabel:'搜索照片',commons:'📷 从 Wikimedia 添加',inat:'📷 从 iNaturalist 添加',gbif:'📷 从 GBIF 添加',download:'📥 下载 HTML',ready:'当前共 {n} 张照片',loading:'正在从 {source} 加载照片…（{n}张）',done:'当前共 {n} 张照片。已完成从 {source} 加载。',error:'当前共 {n} 张照片。加载失败，请重试。',prev:'← 上一页',next:'下一页 →',page:'第 {p}/{pages} 页 · 显示 {a}–{b} / 共 {n} 张',category:'分类：',tip:'来源说明',getting:'正在加载说明…',noDesc:'没有单独的说明。',retry:'无法获取说明，请打开来源页面查看。'},
+    ko:{title:'바퀴벌레 사진 도감',intro:'미국바퀴, 이질바퀴, 독일바퀴, 마다가스카르바퀴 등 다양한 종류와 성장 단계의 사진을 모았습니다.',total:'사진 수: ',unit:'장',kind:'사진 종류',kindText:'바퀴벌레의 종류, 개체 및 성장 단계 사진입니다.',desc:'이미지 설명',descText:'사진에 마우스를 올리면 출처 사이트의 간단한 설명을 볼 수 있습니다.',sources:'사진 출처: ',language:'언어:',search:'종류 또는 파일명 검색…',searchLabel:'사진 검색',commons:'📷 Wikimedia에서 추가',inat:'📷 iNaturalist에서 추가',gbif:'📷 GBIF에서 추가',download:'📥 HTML 다운로드',ready:'현재 사진 {n}장',loading:'{source}에서 사진 불러오는 중… ({n}장)',done:'현재 사진 {n}장. {source}에서 불러오기를 마쳤습니다.',error:'현재 사진 {n}장. 불러오기에 실패했습니다. 다시 시도하세요.',prev:'← 이전 페이지',next:'다음 페이지 →',page:'페이지 {p}/{pages} · {a}–{b} / {n}장',category:'분류: ',tip:'출처 설명',getting:'설명 불러오는 중…',noDesc:'개별 설명이 없습니다.',retry:'설명을 가져오지 못했습니다. 출처 페이지를 확인하세요.'},
+    es:{title:'Galería de fotos de cucarachas',intro:'Colección de fotos de distintas especies y etapas de vida de cucarachas, incluidas la americana, oriental, alemana y de Madagascar.',total:'Fotos en total: ',unit:'',kind:'Colección de fotos',kindText:'Fotos de especies, individuos y etapas de vida de cucarachas.',desc:'Descripción de la imagen',descText:'Pasa el cursor sobre una foto para ver una breve descripción de su fuente.',sources:'Fuentes de imágenes: ',language:'Idioma:',search:'Buscar especie o nombre de archivo…',searchLabel:'Buscar fotos',commons:'📷 Añadir de Wikimedia',inat:'📷 Añadir de iNaturalist',gbif:'📷 Añadir de GBIF',download:'📥 Descargar HTML',ready:'Total: {n} fotos',loading:'Cargando fotos de {source}… ({n})',done:'Total: {n} fotos. Se terminó de cargar desde {source}.',error:'Total: {n} fotos. Error al cargar; inténtalo de nuevo.',prev:'← Anterior',next:'Siguiente →',page:'Página {p}/{pages} · {a}–{b} de {n}',category:'Categoría: ',tip:'Descripción de la fuente',getting:'Cargando descripción…',noDesc:'No hay una descripción individual.',retry:'No se pudo obtener la descripción. Abre la página de origen.'},
+    fr:{title:'Galerie de photos de blattes',intro:'Collection de photos de différentes espèces et étapes de vie, dont la blatte américaine, orientale, germanique et de Madagascar.',total:'Nombre total de photos : ',unit:'',kind:'Collection de photos',kindText:'Photos d’espèces, d’individus et de stades de développement.',desc:'Description de l’image',descText:'Survolez une photo pour afficher une courte description de sa source.',sources:'Sources des images : ',language:'Langue :',search:'Rechercher une espèce ou un fichier…',searchLabel:'Rechercher des photos',commons:'📷 Ajouter depuis Wikimedia',inat:'📷 Ajouter depuis iNaturalist',gbif:'📷 Ajouter depuis GBIF',download:'📥 Télécharger HTML',ready:'Total : {n} photos',loading:'Chargement depuis {source}… ({n})',done:'Total : {n} photos. Chargement depuis {source} terminé.',error:'Total : {n} photos. Échec du chargement ; réessayez.',prev:'← Précédent',next:'Suivant →',page:'Page {p}/{pages} · {a}–{b} sur {n}',category:'Catégorie : ',tip:'Description de la source',getting:'Chargement de la description…',noDesc:'Aucune description individuelle.',retry:'Impossible de récupérer la description. Consultez la page source.'},
+    de:{title:'Kakerlaken-Fotogalerie',intro:'Fotos verschiedener Schabenarten und Entwicklungsstadien, darunter Amerikanische, Orientalische, Deutsche und Madagaskar-Fauchschaben.',total:'Fotos insgesamt: ',unit:'',kind:'Fotosammlung',kindText:'Fotos verschiedener Arten, Individuen und Entwicklungsstadien.',desc:'Bildbeschreibung',descText:'Bewege den Mauszeiger über ein Foto, um eine kurze Beschreibung der Quelle zu sehen.',sources:'Bildquellen: ',language:'Sprache:',search:'Art oder Dateiname suchen…',searchLabel:'Fotos suchen',commons:'📷 Von Wikimedia hinzufügen',inat:'📷 Von iNaturalist hinzufügen',gbif:'📷 Von GBIF hinzufügen',download:'📥 HTML herunterladen',ready:'Insgesamt {n} Fotos',loading:'Fotos von {source} werden geladen… ({n})',done:'Insgesamt {n} Fotos. Laden von {source} abgeschlossen.',error:'Insgesamt {n} Fotos. Laden fehlgeschlagen; bitte erneut versuchen.',prev:'← Zurück',next:'Weiter →',page:'Seite {p}/{pages} · {a}–{b} von {n}',category:'Kategorie: ',tip:'Quellenbeschreibung',getting:'Beschreibung wird geladen…',noDesc:'Keine individuelle Beschreibung verfügbar.',retry:'Beschreibung konnte nicht geladen werden. Bitte Quellseite öffnen.'}
+  };
+  const t=(key,vars={})=>{let v=(dict[languageSelect.value]||dict.ja)[key]??dict.ja[key]??key;return v.replace(/\{(\w+)\}/g,(_,k)=>vars[k]??'');};
+  function applyLanguage(){
+    const d=dict[languageSelect.value]||dict.ja; document.documentElement.lang=languageSelect.value;
+    document.title=d.title; document.getElementById('mainTitle').textContent=d.title;
+    for(const [id,key] of Object.entries({introText:'intro',totalLabel:'total',totalUnit:'unit',kindLabel:'kind',kindText:'kindText',descriptionLabel:'desc',descriptionText:'descText',sourcesLabel:'sources',languageLabel:'language'})) document.getElementById(id).textContent=d[key];
+    searchInput.placeholder=d.search; searchInput.setAttribute('aria-label',d.searchLabel);
+    loadBtn.textContent=d.commons; loadINatBtn.textContent=d.inat; loadGBIFBtn.textContent=d.gbif; downloadBtn.textContent=d.download;
+    ['prevPageBtn','prevPageBtnBottom'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=d.prev;});
+    ['nextPageBtn','nextPageBtnBottom'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=d.next;});
+    refreshGallery(); updateStatus();
+    document.querySelectorAll('.photo-link .source-tooltip').forEach(tip=>{if(!tip.dataset.userOpened) tip.setAttribute('aria-label',d.tip);});
+  }
+  function updateStatus(key=null, source=''){
+    if(key) { statusKey=key; statusArgs=[source]; }
+    liveTotal.textContent=String(count);
+    const sourceNames={commons:'Wikimedia Commons',inat:'iNaturalist',gbif:'GBIF'};
+    const vars={n:count,source:sourceNames[statusArgs[0]]||statusArgs[0]||''};
+    status.textContent=t(statusKey,vars);
+  }
+  async function translateCaptionText(text, target){
+    if(!text || target==='ja') return text;
+    const key=target+'|'+text;
+    if(captionTranslationCache.has(key)) return captionTranslationCache.get(key);
+    // Translate the complete label in small chunks instead of silently truncating it.
+    const chunks=text.match(/[\s\S]{1,350}/g)||[text];
+    try{
+      const translated=[];
+      for(const chunk of chunks){
+        const u=new URL('https://translate.googleapis.com/translate_a/single');
+        u.searchParams.set('client','gtx');u.searchParams.set('sl','auto');u.searchParams.set('tl',target);u.searchParams.set('dt','t');u.searchParams.set('q',chunk);
+        const r=await fetch(u);if(!r.ok)throw new Error('Translation unavailable');
+        const data=await r.json();translated.push((data[0]||[]).map(part=>part[0]||'').join('')||chunk);
+      }
+      const result=translated.join('');captionTranslationCache.set(key,result);return result;
+    }catch(e){console.warn('Caption translation unavailable',e);return text;}
+  }
+  function splitSpeciesLabel(value){
+    const text=String(value||'');
+    // Keep Latin scientific names intact while translating the common-name portion.
+    const m=text.match(/^(\s*)(.*?)([（(][^（）()]*[A-Za-z][^（）()]*[）)])(\s*)$/);
+    if(m)return {prefix:m[1],common:m[2],scientific:m[3],suffix:m[4]};
+    return {prefix:'',common:text,scientific:'',suffix:''};
+  }
+  function translateVisibleCaptions(figures){
+    const lang=languageSelect.value;const tasks=[];
+    for(const fig of figures){
+      const cap=fig.querySelector('figcaption');if(!cap)continue;
+      const title=cap.querySelector('b');if(!title)continue;
+      // Original cards have a bold number followed by a text node; added cards put both in <b>.
+      let node=[...cap.childNodes].find(n=>n.nodeType===3&&n.nodeValue.trim()&&n.nodeName!=='BR');
+      let isDynamic=false;
+      if(!node){node=title;isDynamic=true;}
+      if(!captionOriginals.has(node))captionOriginals.set(node,node.nodeValue);
+      const original=captionOriginals.get(node);
+      if(lang==='ja'){node.nodeValue=original;captionLanguages.set(node,'ja');continue;}
+      if(captionLanguages.get(node)===lang||captionPending.has(node))continue;
+      captionPending.add(node);
+      tasks.push(async()=>{
+        let prefix='',label=original;
+        if(isDynamic){const m=original.match(/^(\s*\d+\s*[　 ]*)(.*)$/);if(m){prefix=m[1];label=m[2];}}
+        const parts=splitSpeciesLabel(label);
+        const translatedCommon=await translateCaptionText(parts.common,lang);
+        const translated=prefix+parts.prefix+translatedCommon+parts.scientific+parts.suffix;
+        if(languageSelect.value===lang){node.nodeValue=translated;captionLanguages.set(node,lang);}
+        captionPending.delete(node);
+      });
+    }
+    (async()=>{for(let i=0;i<tasks.length;i+=4){await Promise.all(tasks.slice(i,i+4).map(run=>run()));}})();
+  }
+  function refreshGallery(resetPage=false){
+    if(resetPage) currentPage=1;
+    const query=(searchInput?.value||'').trim().toLocaleLowerCase();
+    const figures=[...grid.querySelectorAll('figure')];
+    filteredFigures=figures.filter(fig=>!query || fig.textContent.toLocaleLowerCase().includes(query));
+    const pages=Math.max(1,Math.ceil(filteredFigures.length/PAGE_SIZE)); currentPage=Math.min(currentPage,pages);
+    const start=(currentPage-1)*PAGE_SIZE; const visible=new Set(filteredFigures.slice(start,start+PAGE_SIZE));
+    figures.forEach(fig=>fig.classList.toggle('is-hidden',!visible.has(fig)));
+    translateVisibleCaptions([...visible]);
+    const label=t('page',{p:currentPage,pages,a:filteredFigures.length?start+1:0,b:Math.min(start+PAGE_SIZE,filteredFigures.length),n:filteredFigures.length});
+    ['pageInfo','pageInfoBottom'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=label;});
+    ['prevPageBtn','prevPageBtnBottom'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=currentPage<=1;});
+    ['nextPageBtn','nextPageBtnBottom'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=currentPage>=pages;});
+  }
+  function changePage(delta){currentPage+=delta;refreshGallery();}
+  ['prevPageBtn','prevPageBtnBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>changePage(-1)));
+  ['nextPageBtn','nextPageBtnBottom'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>changePage(1)));
+  searchInput?.addEventListener('input',()=>refreshGallery(true)); languageSelect.addEventListener('change',applyLanguage);
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function addCard({href,img,title,description='',source,author='',license='',licenseUrl='',sourceLabel='',scientific='',imageId='',commonsFile=''}){
+    if(!href||!img||seen.has(href)||count>=TARGET)return false;
+    const fig=document.createElement('figure'); fig.className='is-hidden';
+    const link=document.createElement('a');link.className='photo-link';link.href=href;link.target='_blank';link.rel='noopener';link.dataset.source=source;link.dataset.description=description;link.dataset.author=author;link.dataset.license=license;link.dataset.sourceLabel=sourceLabel;link.dataset.imageId=imageId;if(commonsFile)link.dataset.commonsFile=commonsFile;
+    const im=document.createElement('img');im.src=img;im.loading='lazy';im.alt=title||scientific||'Cockroach photo';
+    const tip=document.createElement('span');tip.className='source-tooltip';tip.innerHTML='<b>'+esc(t('tip'))+'</b><br>'+esc(t('getting'));
+    link.append(im,tip);
+    const cap=document.createElement('figcaption');
+    const titleLine=document.createElement('b');titleLine.textContent=String(count+1).padStart(4,'0')+'　'+(scientific||title||'Blattodea');
+    cap.append(titleLine,document.createElement('br'));
+    const small=document.createElement('small');const metaParts=[sourceLabel,author].filter(Boolean);small.textContent=metaParts.join(' · ');if(license){if(metaParts.length)small.append(document.createTextNode(' · '));if(licenseUrl&&/^https?:\/\//i.test(licenseUrl)){const la=document.createElement('a');la.href=licenseUrl;la.target='_blank';la.rel='noopener';la.textContent=license;small.append(la);}else small.append(document.createTextNode(license));}cap.append(small);
+    fig.append(link,cap);grid.appendChild(fig);seen.add(href);count++;liveTotal.textContent=String(count);updateStatus('loading',source);return true;
+  }
+  async function api(params){const url=new URL('https://commons.wikimedia.org/w/api.php');for(const[k,v]of Object.entries(params))url.searchParams.set(k,v);url.searchParams.set('format','json');url.searchParams.set('origin','*');const r=await fetch(url);if(!r.ok)throw new Error('Commons API error');return r.json();}
+  function isPhoto(page,info,filename){const mime=(info?.mime||'').toLowerCase();if(!mime.startsWith('image/'))return false;if(/\.(svg|svgz|gif|webp|avif)$/i.test(filename))return false;const bad=/illustrat|diagram|schem|map|plate|drawing|sketch|icon|logo|coat.?of.?arms|anatomy|microscop|scan|book|page|engraving|painting|artwork|fossil|diorama|model|taxiderm|screenshot|screencap|chart|graph|table|poster|sticker|symbol|emblem|print|lithograph|woodcut|etching|line.?art|comic|cartoon|render|3d|cgi|computer.?generated|termite/i;if(bad.test(filename))return false;const cats=(info?.extmetadata?.Categories?.value||'').toLowerCase();return !/blattodea in art|blattodea anatomy|fossil|extinct|illustration|drawings|diagrams|maps|microscopic/i.test(cats);}
+  async function loadCommons(){if(loading||count>=TARGET)return;loading=true;loadBtn.disabled=true;updateStatus('loading','commons');try{const cats=[];let cont={};do{const data=await api({action:'query',list:'categorymembers',cmtitle:'Category:Species_of_Blattodea',cmtype:'subcat',cmlimit:'max',...cont});for(const x of data.query?.categorymembers||[])cats.push(x.title);cont=data.continue||null;}while(cont);let added=0;for(const cat of cats){if(count>=TARGET)break;try{const files=await api({action:'query',generator:'categorymembers',gcmtitle:cat,gcmtype:'file',gcmlimit:'max',prop:'imageinfo',iiprop:'url|mime|size|extmetadata',iiurlwidth:'700'});for(const page of Object.values(files.query?.pages||{})){const info=page.imageinfo?.[0];if(!info?.thumburl||!page.title)continue;const filename=page.title.replace(/^File:/,'');if(!isPhoto(page,info,filename))continue;const href='https://commons.wikimedia.org/wiki/'+encodeURIComponent(page.title).replace(/%2F/g,'/');if(addCard({href,img:info.thumburl,title:filename,description:info.extmetadata?.ImageDescription?.value?.replace(/<[^>]*>/g,' ')||'',source:'commons',sourceLabel:'Wikimedia Commons',license:info.extmetadata?.LicenseShortName?.value||'',licenseUrl:info.extmetadata?.LicenseUrl?.value||'',commonsFile:filename,scientific:cat.replace(/^Category:/,'').replace(/_/g,' ')}))added++;if(count%10===0)refreshGallery();if(count>=TARGET)break;}}catch(e){console.warn('Commons category skipped',cat,e);} }refreshGallery();updateStatus('done','commons');if(!added)status.textContent=t('done',{n:count,source:'Wikimedia Commons'});}catch(e){console.error(e);updateStatus('error');}finally{loading=false;loadBtn.disabled=false;}}
+  async function loadINaturalist(){if(loading||count>=TARGET)return;loading=true;loadINatBtn.disabled=true;updateStatus('loading','inat');try{let added=0;for(let page=1;page<=10&&count<TARGET;page++){const u=new URL('https://api.inaturalist.org/v1/observations');u.searchParams.set('taxon_name','Blattodea');u.searchParams.set('photos','true');u.searchParams.set('photo_license','any');u.searchParams.set('per_page','100');u.searchParams.set('page',String(page));u.searchParams.set('order_by','votes');const r=await fetch(u);if(!r.ok)throw new Error('iNaturalist API error');const data=await r.json();const observations=data.results||[];if(!observations.length)break;for(const ob of observations){for(const ph of ob.photos||[]){if(count>=TARGET)break;const lic=ph.license_code||'';if(!lic)continue;const photoUrl=(ph.url||'').replace('/square.','/medium.').replace('/small.','/medium.');const href=ob.uri||`https://www.inaturalist.org/observations/${ob.id}`;const attribution=ph.attribution||ob.user?.name||ob.user?.login||'';const desc=[ob.taxon?.name||ob.species_guess||'Blattodea',ob.description||''].filter(Boolean).join(' — ');const licenseMap={'cc0':'https://creativecommons.org/publicdomain/zero/1.0/','cc-by':'https://creativecommons.org/licenses/by/4.0/','cc-by-sa':'https://creativecommons.org/licenses/by-sa/4.0/','cc-by-nc':'https://creativecommons.org/licenses/by-nc/4.0/','cc-by-nc-sa':'https://creativecommons.org/licenses/by-nc-sa/4.0/','cc-by-nd':'https://creativecommons.org/licenses/by-nd/4.0/','cc-by-nc-nd':'https://creativecommons.org/licenses/by-nc-nd/4.0/'};const licenseUrl=licenseMap[lic]||'';if(addCard({href:href+'#photo-'+ph.id,img:photoUrl,title:ob.taxon?.name||ob.species_guess||'Blattodea',description:desc,source:'inat',sourceLabel:'iNaturalist',author:attribution,license:lic,licenseUrl,scientific:ob.taxon?.preferred_common_name||ob.taxon?.name||ob.species_guess||'Blattodea',imageId:String(ph.id)})){added++;} }if(count%10===0)refreshGallery();if(count>=TARGET)break;}}refreshGallery();updateStatus('done','inat');}catch(e){console.error(e);updateStatus('error');}finally{loading=false;loadINatBtn.disabled=false;}}
+  async function loadGBIF(){if(loading||count>=TARGET)return;loading=true;loadGBIFBtn.disabled=true;updateStatus('loading','gbif');try{const match=await fetch('https://api.gbif.org/v1/species/match?name=Blattodea&strict=true').then(r=>{if(!r.ok)throw new Error('GBIF taxonomy error');return r.json();});const taxonKey=match.usageKey||match.speciesKey;if(!taxonKey)throw new Error('GBIF taxon not found');let added=0;for(let offset=0;offset<10000&&count<TARGET;offset+=100){const u=new URL('https://api.gbif.org/v1/occurrence/search');u.searchParams.set('taxonKey',String(taxonKey));u.searchParams.set('mediaType','StillImage');u.searchParams.set('limit','100');u.searchParams.set('offset',String(offset));u.searchParams.set('basisOfRecord','HUMAN_OBSERVATION');const data=await fetch(u).then(r=>{if(!r.ok)throw new Error('GBIF occurrence error');return r.json();});const results=data.results||[];if(!results.length)break;for(const ob of results){for(const media of ob.media||[]){if(count>=TARGET)break;const license=media.license||ob.license||'';if(!/creativecommons\.org\/(licenses|publicdomain\/zero)|CC0|CC[_ -]BY/i.test(license))continue;const img=media.identifier;if(!img||!/^https?:\/\//i.test(img))continue;const href=`https://www.gbif.org/occurrence/${ob.key}`;if(addCard({href,img,title:ob.scientificName||'Blattodea',description:media.description||ob.occurrenceRemarks||'',source:'gbif',sourceLabel:'GBIF',author:media.creator||media.rightsHolder||ob.recordedBy||'',license,licenseUrl:/^https?:\/\//i.test(license)?license:'',scientific:ob.scientificName||'Blattodea',imageId:String(ob.key)}))added++;} }if(count%10===0)refreshGallery();if(count>=TARGET||offset+100>=data.count)break;}refreshGallery();updateStatus('done','gbif');}catch(e){console.error(e);updateStatus('error');}finally{loading=false;loadGBIFBtn.disabled=false;}}
+  downloadBtn.addEventListener('click',()=>{const html='<!doctype html>\n'+document.documentElement.outerHTML;const blob=new Blob([html],{type:'text/html;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cockroach_photo_gallery_multilingual.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);});
+  loadBtn.addEventListener('click',loadCommons);loadINatBtn.addEventListener('click',loadINaturalist);loadGBIFBtn.addEventListener('click',loadGBIF);
+  updateStatus();applyLanguage();setTimeout(loadCommons,300);
+})();
+</script>
+<script>
+(() => {
+  const cache = new Map();
+  const language = () => document.getElementById('languageSelect')?.value || 'ja';
+  const dictTip = {ja:{title:'元サイトの説明',loading:'説明を取得中…',missing:'個別の説明文はありません。',fallback:'ファイル名：',author:'投稿者：',license:'ライセンス：',source:'出典：'},en:{title:'Source description',loading:'Loading description…',missing:'No individual description is available.',fallback:'Filename: ',author:'Contributor: ',license:'License: ',source:'Source: '},zh:{title:'来源说明',loading:'正在加载说明…',missing:'没有单独的说明。',fallback:'文件名：',author:'贡献者：',license:'许可证：',source:'来源：'},ko:{title:'출처 설명',loading:'설명 불러오는 중…',missing:'개별 설명이 없습니다.',fallback:'파일명: ',author:'기여자: ',license:'라이선스: ',source:'출처: '},es:{title:'Descripción de la fuente',loading:'Cargando descripción…',missing:'No hay una descripción individual.',fallback:'Archivo: ',author:'Autor: ',license:'Licencia: ',source:'Fuente: '},fr:{title:'Description de la source',loading:'Chargement de la description…',missing:'Aucune description individuelle.',fallback:'Fichier : ',author:'Auteur : ',license:'Licence : ',source:'Source : '},de:{title:'Quellenbeschreibung',loading:'Beschreibung wird geladen…',missing:'Keine individuelle Beschreibung verfügbar.',fallback:'Dateiname: ',author:'Beitragende: ',license:'Lizenz: ',source:'Quelle: '}};
+  const extraLabels={ja:{full:'説明文を全文表示',dialogTitle:'説明文の全文',close:'閉じる ✕'},en:{full:'Read full description',dialogTitle:'Full description',close:'Close ✕'},zh:{full:'查看完整说明',dialogTitle:'完整说明',close:'关闭 ✕'},ko:{full:'설명 전체 보기',dialogTitle:'전체 설명',close:'닫기 ✕'},es:{full:'Leer descripción completa',dialogTitle:'Descripción completa',close:'Cerrar ✕'},fr:{full:'Lire la description complète',dialogTitle:'Description complète',close:'Fermer ✕'},de:{full:'Vollständige Beschreibung',dialogTitle:'Vollständige Beschreibung',close:'Schließen ✕'}};
+  const tr = key => (extraLabels[language()]||extraLabels.ja)[key] || (dictTip[language()]||dictTip.ja)[key] || key;
+  const clean = html => {const d=document.createElement('div');d.innerHTML=html||'';return (d.textContent||'').replace(/\s+/g,' ').trim();};
+  const decodeFile = value => {try{return decodeURIComponent(String(value||'').replace(/\+/g,' ')).replace(/_/g,' ');}catch{return String(value||'').replace(/_/g,' ');}};
+  const shortText = t => String(t||'').replace(/\s+/g,' ').trim();
+  async function translateText(text, target){
+    if(!text)return text;const key=target+'|'+text;if(cache.has(key))return cache.get(key);
+    // Translate every part of longer source descriptions; the old version cut off text after 900 characters.
+    const chunks=String(text).match(/[\s\S]{1,350}/g)||[String(text)];const out=[];
+    try{for(const chunk of chunks){const url=new URL('https://translate.googleapis.com/translate_a/single');url.searchParams.set('client','gtx');url.searchParams.set('sl','auto');url.searchParams.set('tl',target);url.searchParams.set('dt','t');url.searchParams.set('q',chunk);const r=await fetch(url.toString());if(!r.ok)throw new Error('Translation service unavailable');const data=await r.json();out.push((data[0]||[]).map(part=>part[0]||'').join('')||chunk);}const result=out.join('');cache.set(key,result);return result;}catch(e){console.warn('Translation unavailable',e);return text;}
+  }
+  function renderTip(tip, text){tip.textContent='';const b=document.createElement('b');b.textContent=tr('title');const copy=document.createElement('span');copy.className='tooltip-copy';copy.textContent=text;const more=document.createElement('button');more.type='button';more.className='show-full-description';more.textContent=tr('full');more.setAttribute('aria-label',tr('full'));tip.append(b,document.createElement('br'),copy,more); }
+  async function loadTooltip(link){const tip=link.querySelector('.source-tooltip');if(!tip||link.dataset.loading==='1')return;const lang=language();const source=link.dataset.source||'commons';const rawFile=link.dataset.commonsFile||link.getAttribute('href')?.split('/wiki/File:')[1]||'';let text='';
+    if(source!=='commons'&&(link.dataset.description||link.dataset.tooltipBaseText)){
+      if(link.dataset.tooltipBaseText){text=link.dataset.tooltipBaseText;}
+      else {text=clean(link.dataset.description);const author=link.dataset.author||'';const license=link.dataset.license||'';const label=link.dataset.sourceLabel||source;const details=[label,author?tr('author')+author:'',license?tr('license')+license:''].filter(Boolean).join(' · ');text=[text,details].filter(Boolean).join(' — ');link.dataset.tooltipBaseText=text;}
+      if(!text)text=tr('missing');const translated=await translateText(text,lang);renderTip(tip,translated);link.dataset.loaded='1';if(language()!==lang)loadTooltip(link);return;
+    }
+    const file=decodeFile(rawFile);if(!file){renderTip(tip,tr('missing'));link.dataset.loaded='1';return;}const cacheKey=lang+'|commons|'+file;if(cache.has(cacheKey)){renderTip(tip,cache.get(cacheKey));link.dataset.loaded='1';return;}
+    link.dataset.loading='1';renderTip(tip,tr('loading'));
+    try{const url=new URL('https://commons.wikimedia.org/w/api.php');const params={action:'query',prop:'imageinfo',iiprop:'extmetadata|commonmetadata',titles:'File:'+file,format:'json',origin:'*'};for(const[k,v]of Object.entries(params))url.searchParams.set(k,v);const res=await fetch(url.toString());if(!res.ok)throw new Error('Commons API request failed');const data=await res.json();const page=Object.values(data?.query?.pages||{})[0];const info=page?.imageinfo?.[0];const meta=info?.extmetadata||{};const common=info?.commonmetadata||[];const commonValue=name=>common.find(x=>x.name===name)?.value||'';const candidates=[clean(meta.ImageDescription?.value),clean(meta.ObjectName?.value),clean(commonValue('ImageDescription')),clean(meta.Caption?.value)].map(shortText).filter(Boolean);text=candidates.find(t=>!/^(?:en|English|und)$/i.test(t))||'';const cats=clean(meta.Categories?.value).split(/[,;|]/).map(x=>x.trim()).filter(Boolean).slice(0,3);if(!text)text=cats.length?tr('missing')+' '+cats.join(', '):tr('missing')+' '+tr('fallback')+file;const author=clean(meta.Artist?.value);const license=clean(meta.LicenseShortName?.value);const details=[author?tr('author')+author:'',license?tr('license')+license:''].filter(Boolean).join(' · ');if(details)text+=' — '+details;link.dataset.tooltipBaseText=text;text=await translateText(text,lang);cache.set(cacheKey,text);renderTip(tip,text);link.dataset.loaded='1';}catch(e){console.warn('Tooltip metadata fetch failed',file,e);renderTip(tip,tr('missing')+' '+tr('fallback')+file);}finally{delete link.dataset.loading;if(language()!==lang)loadTooltip(link);}}
+  const grid=document.querySelector('.grid');
+  const dialog=document.getElementById('descriptionDialog');const dialogBody=document.getElementById('descriptionDialogBody');const dialogTitle=document.getElementById('descriptionDialogTitle');const dialogClose=document.getElementById('descriptionDialogClose');
+  grid?.addEventListener('click',e=>{const more=e.target.closest('.show-full-description');if(!more)return;e.preventDefault();e.stopPropagation();const tip=more.closest('.source-tooltip');const copy=tip?.querySelector('.tooltip-copy');dialogBody.textContent=copy?.textContent||'';dialogTitle.textContent=tr('dialogTitle');dialogClose.textContent=tr('close');if(typeof dialog.showModal==='function')dialog.showModal();else alert(dialogBody.textContent);});
+  dialogClose?.addEventListener('click',()=>dialog?.close());dialog?.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
+  grid?.addEventListener('pointerover',e=>{const link=e.target.closest('.photo-link');if(link&&!link.contains(e.relatedTarget))loadTooltip(link);});grid?.addEventListener('focusin',e=>{const link=e.target.closest('.photo-link');if(link)loadTooltip(link);});
+  document.getElementById('languageSelect')?.addEventListener('change',()=>{grid?.querySelectorAll('.photo-link[data-loaded="1"]').forEach(link=>loadTooltip(link));});
+})();
+</script>
+</body>
+</html>
